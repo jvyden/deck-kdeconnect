@@ -45,13 +45,13 @@ build: ## Build everything
 
 copy-ssh-key: ## Copy public ssh key to steamdeck
 	@echo "+ $@"
-	@ssh-copy-id -i $(DECK_KEY) $(DECK_USER)@$(DECK_HOST)
+	@ssh-copy-id $(DECK_USER)@$(DECK_HOST)
 
 deploy-steamdeck: ## Deploy plugin build to steamdeck
 	@echo "+ $@"
-	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
+	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) \
  		'chmod -v 755 $(DECK_HOME)/homebrew/plugins/ && mkdir -p $(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)'
-	@rsync -azp --delete --progress -e "ssh -i $(DECK_KEY)" \
+	@rsync -azp --delete --progress -e "ssh" \
 		--chmod=Du=rwx,Dg=rx,Do=rx,Fu=rwx,Fg=rx,Fo=rx \
 		--exclude='.git/' \
 		--exclude='.github/' \
@@ -65,12 +65,12 @@ deploy-steamdeck: ## Deploy plugin build to steamdeck
 		--exclude='.env' . \
 		--exclude='Makefile' . \
  		./ $(DECK_USER)@$(DECK_HOST):$(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)/
-	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
+	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) \
  		'chmod -v 755 $(DECK_HOME)/homebrew/plugins/'
 
 restart-decky: ## Restart Decky on remote steamdeck
 	@echo "+ $@"
-	@ssh -t $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
+	@ssh -t $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) \
  		'sudo systemctl restart plugin_loader.service'
 	@echo -e '\033[0;32m+ all is good, restarting Decky...\033[0m'
 
@@ -92,7 +92,7 @@ cleanup: ## Delete all generated files and folders
 
 uninstall-plugin: ## Uninstall plugin from steamdeck, restart Decky
 	@echo "+ $@"
-	@ssh -t $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
+	@ssh -t $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) \
  		"sudo sh -c 'rm -rf $(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)/ && systemctl restart plugin_loader.service'"
 	@echo -e '\033[0;32m+ all is good, restarting Decky...\033[0m'
 
