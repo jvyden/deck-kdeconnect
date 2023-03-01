@@ -1,7 +1,7 @@
 {
   "name": "KDE Connect",
   "author": "jvyden",
-  "flags": ["debug", "root"],
+  "flags": ["debug"],
   "publish": {
     "tags": ["template"],
     "description": "Manage KDE Connect from the Steam Deck UI",
