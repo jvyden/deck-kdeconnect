@@ -11,26 +11,44 @@ import {
 import { VFC } from "react";
 import { FaMobileAlt } from "react-icons/fa";
 
+const showResult = (res: any) => {
+  showModal(
+    <ConfirmModal
+      onOK={()=>{}}
+      onCancel={()=>{}}
+      strTitle={'Result'}
+    >
+      {JSON.stringify(res)}
+    </ConfirmModal>
+  )
+}
+
+const startService = async (serverAPI: ServerAPI) => {
+  const res = await serverAPI.callPluginMethod("start_service", {});
+  showResult(res)
+}
+
+const stopService = async (serverAPI: ServerAPI) => {
+  const res = await serverAPI.callPluginMethod("stop_service", {});
+  showResult(res)
+}
+
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
   return (
-    <PanelSection title="Manage">
+    <PanelSection title="Manage Service">
       <PanelSectionRow>
         <ButtonItem
           layout="below"
-          onClick={async (e) => {
-              const res = await serverAPI.callPluginMethod("add", {left: 2, right: 2});
-              showModal(
-                <ConfirmModal
-                  onOK={()=>{}}
-                  onCancel={()=>{}}
-                  strTitle={'Result'}
-                >
-                  {JSON.stringify(res)}
-                </ConfirmModal>
-              )
-          }}
+          onClick={async() => startService(serverAPI)}
         >
           Start KDE Connect
+        </ButtonItem>
+
+        <ButtonItem
+          layout="below"
+          onClick={async() => stopService(serverAPI)}
+        >
+          Stop KDE Connect
         </ButtonItem>
       </PanelSectionRow>
     </PanelSection>
