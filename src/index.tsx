@@ -12,13 +12,17 @@ import { VFC } from "react";
 import { FaMobileAlt } from "react-icons/fa";
 
 const showResult = (res: any) => {
+  showResultStr(JSON.stringify(res))
+}
+
+const showResultStr = (res: string) => {
   showModal(
     <ConfirmModal
       onOK={()=>{}}
       onCancel={()=>{}}
       strTitle={'Result'}
     >
-      {JSON.stringify(res)}
+      <pre>{res}</pre>
     </ConfirmModal>
   )
 }
@@ -31,6 +35,17 @@ const startService = async (serverAPI: ServerAPI) => {
 const stopService = async (serverAPI: ServerAPI) => {
   const res = await serverAPI.callPluginMethod("stop_service", {});
   showResult(res)
+}
+
+const getConnectedDevices = async (serverAPI: ServerAPI) => {
+  const res = await serverAPI.callPluginMethod<{}, string>("get_connected_devices", {});
+
+  if(res.success) {
+    showResultStr(res.result)
+  }
+  else {
+    showResult(res)
+  }
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
@@ -49,6 +64,13 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
           onClick={async() => stopService(serverAPI)}
         >
           Stop KDE Connect
+        </ButtonItem>
+
+        <ButtonItem
+          layout="below"
+          onClick={async() => getConnectedDevices(serverAPI)}
+        >
+          Show Connected Devices
         </ButtonItem>
       </PanelSectionRow>
     </PanelSection>

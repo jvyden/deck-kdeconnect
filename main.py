@@ -24,3 +24,7 @@ class Plugin:
     async def stop_service(self):
         subprocess.run(["/usr/bin/systemctl", '--user', 'stop', 'deck-kdeconnectd.scope'], check=True, env=self.env)
         return 0
+
+    async def get_connected_devices(self):
+        output = subprocess.check_output(["/usr/bin/kdeconnect-cli", "-a", "--name-only"], env=self.env).decode('utf-8')
+        return output
