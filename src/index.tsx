@@ -49,7 +49,7 @@ const isServiceRunning = async (serverAPI: ServerAPI): Promise<boolean> => {
 }
 
 const toggleService = async (serverAPI: ServerAPI) => {
-  await isServiceRunning(serverAPI) ? stopService(serverAPI) : startService(serverAPI)
+  await isServiceRunning(serverAPI) ? await stopService(serverAPI) : await startService(serverAPI)
 }
 
 const getConnectedDevices = async (serverAPI: ServerAPI): Promise<string[] | null> => {
@@ -57,6 +57,7 @@ const getConnectedDevices = async (serverAPI: ServerAPI): Promise<string[] | nul
 
   if (res.success) {
     // showResultStr(res.result);
+    if(res.result == '\n' || res.result == '') return [];
     return res.result.trimEnd().split('\n');
   }
 
@@ -70,7 +71,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
 
   useEffect(() => {
     isServiceRunning(serverAPI).then((val) => setRunning(val));
-  })
+  }, [running])
 
   useEffect(() => {
     getConnectedDevices(serverAPI).then((val) => {
@@ -81,7 +82,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
 
       setDevices(val);
     })
-  })
+  }, [devices])
 
   return (
     <div>
@@ -90,7 +91,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
           <ButtonItem
             layout="below"
             onClick={async () => {
-              toggleService(serverAPI)
+              await toggleService(serverAPI)
               isServiceRunning(serverAPI).then((val) => setRunning(val))
             }}
           >
