@@ -18,8 +18,8 @@ const showResult = (res: any) => {
 const showResultStr = (res: string) => {
   showModal(
     <ConfirmModal
-      onOK={()=>{}}
-      onCancel={()=>{}}
+      onOK={() => { }}
+      onCancel={() => { }}
       strTitle={'KDE Connect - Error'} // technically can be used for non-errors, but whatevs~
     >
       <pre>{res}</pre>
@@ -29,18 +29,18 @@ const showResultStr = (res: string) => {
 
 const startService = async (serverAPI: ServerAPI) => {
   const res = await serverAPI.callPluginMethod("start_service", {});
-  if(!res.success) showResult(res)
+  if (!res.success) showResult(res)
   // showResult(res)
 }
 
 const stopService = async (serverAPI: ServerAPI) => {
   const res = await serverAPI.callPluginMethod("stop_service", {});
-  if(!res.success) showResult(res)
+  if (!res.success) showResult(res)
 }
 
-const isServiceRunning = async(serverAPI: ServerAPI): Promise<boolean> => {
+const isServiceRunning = async (serverAPI: ServerAPI): Promise<boolean> => {
   const res = await serverAPI.callPluginMethod<{}, boolean>("is_service_running", {});
-  if(!res.success) {
+  if (!res.success) {
     showResult(res)
     return false;
   }
@@ -48,14 +48,14 @@ const isServiceRunning = async(serverAPI: ServerAPI): Promise<boolean> => {
   return res.result;
 }
 
-const toggleService = async(serverAPI: ServerAPI) => {
-    await isServiceRunning(serverAPI) ? stopService(serverAPI) : startService(serverAPI)
+const toggleService = async (serverAPI: ServerAPI) => {
+  await isServiceRunning(serverAPI) ? stopService(serverAPI) : startService(serverAPI)
 }
 
 const getConnectedDevices = async (serverAPI: ServerAPI): Promise<string[] | null> => {
   const res = await serverAPI.callPluginMethod<{}, string>("get_connected_devices", {});
 
-  if(res.success) {
+  if (res.success) {
     showResultStr(res.result);
     return res.result.split('\n');
   }
@@ -72,36 +72,38 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
   })
 
   return (
-    <PanelSection title={`Manage Service (${ running ? "Running" : "Stopped" })`}>
-      <PanelSectionRow>
-        <ButtonItem
-          layout="below"
-          onClick={async() => {
-            toggleService(serverAPI)
-            isServiceRunning(serverAPI).then((val) => setRunning(val))
-          }}
-        >
-          { !running ? "Start" : "Stop" } KDE Connect
-        </ButtonItem>
-        <ButtonItem
-          layout="below"
-          onClick={async() => showResult(await isServiceRunning(serverAPI))}
-        >
-          Check status
-        </ButtonItem>
-      </PanelSectionRow>
+    <div>
+      <PanelSection title={`Manage Service (${running ? "Running" : "Stopped"})`}>
+        <PanelSectionRow>
+          <ButtonItem
+            layout="below"
+            onClick={async () => {
+              toggleService(serverAPI)
+              isServiceRunning(serverAPI).then((val) => setRunning(val))
+            }}
+          >
+            {!running ? "Start" : "Stop"} KDE Connect
+          </ButtonItem>
+          <ButtonItem
+            layout="below"
+            onClick={async () => showResult(await isServiceRunning(serverAPI))}
+          >
+            Check status
+          </ButtonItem>
+        </PanelSectionRow>
+      </PanelSection>
       <PanelSection title="Devices">
         <ButtonItem
-            layout="below"
-            onClick={async() => getConnectedDevices(serverAPI)}
-          >
-            <div style={{display: 'flex', alignItems: 'center', columnGap: '5px', justifyContent: 'center'}}>
-              <FaSyncAlt />
-              <div>Refresh</div>
-            </div>
+          layout="below"
+          onClick={async () => getConnectedDevices(serverAPI)}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', columnGap: '5px', justifyContent: 'center' }}>
+            <FaSyncAlt />
+            <div>Refresh</div>
+          </div>
         </ButtonItem>
       </PanelSection>
-    </PanelSection>
+    </div>
   );
 };
 
