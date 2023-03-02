@@ -56,19 +56,31 @@ const getConnectedDevices = async (serverAPI: ServerAPI): Promise<string[] | nul
   const res = await serverAPI.callPluginMethod<{}, string>("get_connected_devices", {});
 
   if (res.success) {
-    showResultStr(res.result);
-    return res.result.split('\n');
+    // showResultStr(res.result);
+    return res.result.trimEnd().split('\n');
   }
 
-  showResult(res);
+  // showResult(res);
   return null;
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
   const [running, setRunning] = useState<boolean>(false);
+  const [devices, setDevices] = useState<string[]>([]);
 
   useEffect(() => {
-    isServiceRunning(serverAPI).then((val) => setRunning(val))
+    isServiceRunning(serverAPI).then((val) => setRunning(val));
+  })
+
+  useEffect(() => {
+    getConnectedDevices(serverAPI).then((val) => {
+      if(val == null) {
+        setDevices([]);
+        return;
+      }
+
+      setDevices(val);
+    })
   })
 
   return (
@@ -92,10 +104,20 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
           </ButtonItem>
         </PanelSectionRow>
       </PanelSection>
-      <PanelSection title="Devices">
+      <PanelSection title={`Devices (${devices.length} currently connected)`}>
+        {devices.map((val) => <p>{val}</p>)}
         <ButtonItem
           layout="below"
-          onClick={async () => getConnectedDevices(serverAPI)}
+          onClick={async () => {
+            getConnectedDevices(serverAPI).then((val) => {
+              if(val == null) {
+                setDevices([]);
+                return;
+              }
+        
+              setDevices(val);
+            })
+          }}
         >
           <div style={{ display: 'flex', alignItems: 'center', columnGap: '5px', justifyContent: 'center' }}>
             <FaSyncAlt />
