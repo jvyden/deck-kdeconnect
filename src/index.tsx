@@ -73,6 +73,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
     isServiceRunning(serverAPI).then((val) => setRunning(val));
   }, [running])
 
+  // FIXME: this updates wayyyyyyyyyyy too much
   useEffect(() => {
     getConnectedDevices(serverAPI).then((val) => {
       if(val == null) {
@@ -96,12 +97,6 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
             }}
           >
             {!running ? "Start" : "Stop"} KDE Connect
-          </ButtonItem>
-          <ButtonItem
-            layout="below"
-            onClick={async () => showResult(await isServiceRunning(serverAPI))}
-          >
-            Check status
           </ButtonItem>
         </PanelSectionRow>
       </PanelSection>
