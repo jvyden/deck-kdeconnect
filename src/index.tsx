@@ -9,7 +9,7 @@ import {
   staticClasses,
 } from "decky-frontend-lib";
 import { VFC, useState, useEffect } from "react";
-import { FaMobileAlt } from "react-icons/fa";
+import { FaMobileAlt, FaSyncAlt } from "react-icons/fa";
 
 const showResult = (res: any) => {
   showResultStr(JSON.stringify(res))
@@ -95,17 +95,20 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
             layout="below"
             onClick={async() => getConnectedDevices(serverAPI)}
           >
-            Refresh
+            <div style={{display: 'flex', alignItems: 'center', columnGap: '5px', justifyContent: 'center'}}>
+              <FaSyncAlt />
+              <div>Refresh</div>
+            </div>
         </ButtonItem>
       </PanelSection>
     </PanelSection>
   );
 };
 
-export default definePlugin((serverApi: ServerAPI) => {
+export default definePlugin((serverAPI: ServerAPI) => {
   return {
     title: <div className={staticClasses.Title}>KDE Connect</div>,
-    content: <Content serverAPI={serverApi} />,
+    content: <Content serverAPI={serverAPI} />,
     icon: <FaMobileAlt />
   };
 });
