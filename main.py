@@ -4,9 +4,10 @@ import subprocess
 class Plugin:
 
     # TODO: add support in decky loader to grab user's id (avoids hardcoding as shown here)
-    bus = "unix:path=/run/user/1000/bus"
+    bus = 'unix:path=/run/user/1000/bus'
     env = {
-            'DBUS_SESSION_BUS_ADDRESS': bus
+            'DBUS_SESSION_BUS_ADDRESS': bus,
+            'XDG_RUNTIME_DIR': '/run/user/1000'
     }
 
     unit = "deck-kdeconnectd"
